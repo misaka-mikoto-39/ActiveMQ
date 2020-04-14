@@ -30,7 +30,6 @@ public class Client {
 			System.out.println("Enter an url: ");
 			String msg;
 			msg = new Scanner(System.in).nextLine();
-			// send msg
 			msg = connectionID + " " + msg;
 			TextMessage sendMessage = session.createTextMessage(msg);
 			producer.send(sendMessage);

@@ -22,12 +22,8 @@ public class WebCrawler {
         String[] output = { "Not an URL", "END", "END", "END", "END", "END", "END", "END", "END", "END", "END", "END" };
         if (checkurl(URL)) {
             try {
-                // 2. Fetch the HTML code
                 Document document = Jsoup.connect(URL).get();
-                // 3. Parse the HTML to extract links to other URLs
                 Elements linksOnPage = document.select("a[href]");
-
-                // 5. For each extracted URL... go back to Step 4.
                 int count = 0;
                 for (Element page : linksOnPage) {
                     if (count < 10) {

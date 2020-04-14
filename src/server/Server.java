@@ -31,10 +31,8 @@ public class Server {
                 TextMessage textMessage = (TextMessage) recieveMessage;
                 String connectionID = textMessage.getText().split(" ", 2)[0];
                 String data = textMessage.getText().split(" ", 2)[1];
-                // xu li data tai day
                 WebCrawler crawler = new WebCrawler();
                 String[] output = crawler.getPageLinks(data);
-                // gui data
                 Destination sendDestination = session.createQueue(connectionID);
                 MessageProducer producer = session.createProducer(sendDestination);
                 for (int i = 0; i < output.length; i++) {
