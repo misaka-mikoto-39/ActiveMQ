@@ -23,6 +23,7 @@ public class Server {
         Destination recieveDestination = session.createQueue(mainsubject);
         MessageConsumer consumer = session.createConsumer(recieveDestination);
         while (true) {
+
             System.out.println("Waiting");
             // get data
             Message recieveMessage = consumer.receive();
@@ -31,13 +32,23 @@ public class Server {
                 String connectionID = textMessage.getText().split(" ", 2)[0];
                 String data = textMessage.getText().split(" ", 2)[1];
                 // xu li data tai day
-                data = data + " da xu ly";
+                WebCrawler crawler = new WebCrawler();
+                String[] output = crawler.getPageLinks(data);
                 // gui data
                 Destination sendDestination = session.createQueue(connectionID);
                 MessageProducer producer = session.createProducer(sendDestination);
-                TextMessage sendMessage = session.createTextMessage(data);
-                producer.send(sendMessage);
-                System.out.println("Da gui: '" + sendMessage.getText() + "' den " + connectionID);
+                for (int i = 0; i < output.length; i++) {
+                    if (output[i].equals("END")) {
+                        TextMessage sendMessage = session.createTextMessage(output[i]);
+                        producer.send(sendMessage);
+                        break;
+                    } else {
+                        TextMessage sendMessage = session.createTextMessage(output[i]);
+                        producer.send(sendMessage);
+                    }
+                }
+                producer.close();
+                System.out.println("Done: '" + connectionID + "'");
             }
         }
     }

@@ -17,7 +17,6 @@ public class Client {
 	private static String mainsubject = "MESSAGEQUEUE";
 
 	public static void main(String[] args) throws JMSException {
-		boolean check = true;
 		ConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
 		Connection connection = connectionFactory.createConnection();
 		connection.start();
@@ -27,27 +26,34 @@ public class Client {
 		MessageProducer producer = session.createProducer(sendDestination);
 		Destination recieveDestination = session.createQueue(connectionID);
 		MessageConsumer consumer = session.createConsumer(recieveDestination);
-		while (check) {
-			System.out.println("Nhap input: ");
+		while (true) {
+			System.out.println("Enter an url: ");
 			String msg;
 			msg = new Scanner(System.in).nextLine();
 			// send msg
 			msg = connectionID + " " + msg;
 			TextMessage sendMessage = session.createTextMessage(msg);
 			producer.send(sendMessage);
-			System.out.println("Da gui: '" + msg + "'");
+			System.out.println("Sent: '" + msg + "'");
 			// wait answer
-			Message recieveMessage = consumer.receive();
-			if (recieveMessage instanceof TextMessage) {
-				TextMessage textMessage = (TextMessage) recieveMessage;
-				System.out.println("Ket qua: '" + textMessage.getText() + "'");
+			System.out.println("Result:");
+			while (true) {
+				Message recieveMessage = consumer.receive();
+				if (recieveMessage instanceof TextMessage) {
+					TextMessage textMessage = (TextMessage) recieveMessage;
+					if (textMessage.getText().equals("END")) {
+						break;
+					} else {
+						System.out.println(textMessage.getText());
+					}
+				}
 			}
-			System.out.println("Tiep tuc? (Y/N)");
-			msg = new Scanner(System.in).next();
-			if (msg == "N") {
-				check = false;
+			System.out.println("Continue? (Y/N)");
+			msg = new Scanner(System.in).nextLine();
+			if (msg.equals("N")) {
+				break;
 			}
-
 		}
+		connection.close();
 	}
 }
